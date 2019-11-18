@@ -1,10 +1,4 @@
-//
-//  AppDelegate.swift
-//  Bookworm
-//
-//  Created by Saif on 18/11/19.
-//  Copyright © 2019 LeftRightMind. All rights reserved.
-//
+
 
 import UIKit
 import CoreData

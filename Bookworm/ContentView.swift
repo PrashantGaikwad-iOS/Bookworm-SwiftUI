@@ -1,16 +1,13 @@
-//
-//  ContentView.swift
-//  Bookworm
-//
-//  Created by Saif on 18/11/19.
-//  Copyright © 2019 LeftRightMind. All rights reserved.
-//
+
 
 import SwiftUI
 
 struct ContentView: View {
     @Environment(\.managedObjectContext) var moc
-    @FetchRequest(entity: Book.entity(), sortDescriptors: []) var books: FetchedResults<Book>
+    @FetchRequest(entity: Book.entity(), sortDescriptors: [
+        NSSortDescriptor(keyPath: \Book.title, ascending: true),
+        NSSortDescriptor(keyPath: \Book.author, ascending: true)
+    ]) var books: FetchedResults<Book>
     
     @State private var showingAddScreen = false
     
@@ -18,7 +15,7 @@ struct ContentView: View {
         NavigationView {
             List {
                 ForEach(books, id: \.self) { book in
-                    NavigationLink(destination: Text(book.title ?? "Unknown Title")) {
+                    NavigationLink(destination: DetailView(book: book)) {
                         EmojiRatingView(rating: book.rating)
                             .font(.largeTitle)
                         
@@ -30,9 +27,10 @@ struct ContentView: View {
                         }
                     }
                 }
+                .onDelete(perform: deleteBooks)
             }
             .navigationBarTitle("Bookworm")
-            .navigationBarItems(trailing: Button(action: {
+            .navigationBarItems(leading: EditButton(), trailing: Button(action: {
                 self.showingAddScreen.toggle()
             }) {
                 Image(systemName: "plus")
@@ -41,6 +39,19 @@ struct ContentView: View {
                     AddBookView().environment(\.managedObjectContext, self.moc)
             }
         }
+    }
+    
+    func deleteBooks(at offsets: IndexSet) {
+        for offset in offsets {
+            // find this book in our fetch request
+            let book = books[offset]
+
+            // delete it from the context
+            moc.delete(book)
+        }
+
+        // save the context
+        try? moc.save()
     }
 }
 
