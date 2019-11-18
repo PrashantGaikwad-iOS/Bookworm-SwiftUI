@@ -42,11 +42,13 @@ struct AddBookView: View {
                         newBook.rating = Int16(self.rating)
                         newBook.genre = self.genre
                         newBook.review = self.review
+                        newBook.createDate = Date()
 
                         try? self.moc.save()
                         self.presentationMode.wrappedValue.dismiss()
                     }
                 }
+            .disabled(title == "" || author == "" || genre == "" || review == "" )
             }
             .navigationBarTitle("Add Book")
         }
